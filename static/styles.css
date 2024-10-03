@@ -1,0 +1,100 @@
+html, body{
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+header{
+  background: rgb(0, 152, 121);
+  background: linear-gradient(0deg, rgba(0, 152, 121, 1) 54%, rgba(0, 219, 175, 1) 100%);
+  width: 100%;
+  height: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0px 5px;
+}
+
+header .header-h1{
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  color: #ddd;
+}
+
+header .btn-grid{
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+header .btn-grid button{
+  cursor: pointer;
+  margin: 0;
+  padding: 16px 200px;
+  background-color: #009879;
+  border: none;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: 19px;
+  font-weight: bold;
+  color: #ddd;
+}
+
+header .btn-grid button:hover{
+  transition: 0.5s;
+  background-color: #006b56;
+}
+
+footer{
+  background-color: #009879;
+}
+
+.conteudo{
+  display: flex;
+  padding-top: 150px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px;
+  text-align: left;
+}
+
+table thead tr {
+  background-color: #009879;
+  color: white;
+  text-align: left;
+  font-weight: bold;
+}
+
+table th,
+table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+table tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+
+table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+table tbody tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}

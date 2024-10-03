@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/styles.css" />
+  <title>Lista de espera</title>
+</head>
+
+<body>
+
+  <header>
+    <div>
+      <div class="header-h1">
+        <h1>Sistema de lista de paciente</h1>
+      </div>
+      <div class="btn-grid">
+        <form action="" method="post">
+          <button type="submit">Cadastrar paciente</button>
+        </form>
+        <form action="" method="post">
+          <button type="submit">Cadastrar psicólogo</button>
+        </form>
+        <form action="" method="post">
+          <button type="submit">Lista de consultas</button>
+        </form>
+      </div>
+    </div>
+
+  </header>
+
+  <div class="conteudo">
+      <h1>{{ titulo }}</h1>
+      {% block content %}
+      {% endblock %}
+  </div>
+
+  <footer>
+    <div class="footer_grid">
+      <div class="bloco_esquerdo">
+        <h3>Nome do aplicativo</h3>
+        <p> </p>
+      </div>
+      <div class="bloco_central">
+        <h3>CONTATO</h3>
+        <p>Rua Alegre, 123 (Centro)</p>
+        <p>CEP 12345-789 - Juiz de Fora - MG</p>
+        <p>(32) 91234-4567</p>
+      </div>
+      <div class="bloco_direito">
+        <img src="" alt="Imagem do Rodapé">
+      </div>
+      <div class="direitos_reservados">
+        <p>&copy; 2024 Nome do aplicativo. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  
+  </footer>
+
+
+</body>
