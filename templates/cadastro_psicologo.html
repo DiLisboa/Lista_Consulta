@@ -1,13 +1,13 @@
 {% extends 'template.html' %}
 {% block content %}
-  <form method="post" action="">
+  <form method="post" action="/cadastrado">
     <p>
       <label for="nome">Nome: </label>
-      <input class="form-control" type="name" name="nome_pis" required>
+      <input class="form-control" type="nome" name="nome" required>
     </p>
     <p>
       <label for="cpf">CPF: </label>
-      <input class="form-control" type="cpf" name="cpf_pis" required>
+      <input class="form-control" type="cpf" name="cpf" required>
     </p>
     <p>
     <label for="crp">CRP: </label>
@@ -15,19 +15,19 @@
     </p>
     <p>
       <label for="numero">Numero de telefone: </label>
-      <input class="form-control" type="number" name="num_pis" required>
+      <input class="form-control" type="number" name="numero" required>
     </p>
     <p>
       <label for="email">Email: </label>
-      <input class="form-control" type="email" name="email_pis" required>
+      <input class="form-control" type="email" name="email" required>
     </p>
     <p>
-      <label for="nasc_pac">Data de nascimento: </label>
-      <input class="form-control" type="date" name="nasc_pis" required>
+      <label for="nasc">Data de nascimento: </label>
+      <input class="form-control" type="date" name="nasc" required>
     </p>
     <p>
-      <label for="sexo_pac">Sexo: </label>
-      <select class="form-control" name="sexo_pac" required>
+      <label for="sexo">Sexo: </label>
+      <select class="form-control" name="sexo" required>
         <option value="masculino">Masculino</option>
         <option value="feminino">Feminino</option>
         <option value="nao-binario">Não Binario</option>
@@ -35,7 +35,7 @@
       </select>
     </p>
     <p>
-      <button class="btn-cad-pis" type="submit">Finalizar cadastro</button>
+      <button name="btn-cad-pis" type="submit">Finalizar cadastro</button>
     </p>
 
   </form>
