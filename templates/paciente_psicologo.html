@@ -1,0 +1,26 @@
+{% extends 'template.html' %}
+{% block content %}
+    <form method="post" action="/adicionar-lista-espera" class="form-cadastro">
+        <p>
+            <label for="paciente">Paciente: </label>
+            <select class="form-control" name="paciente_id" required>
+                {% for paciente in pacientes %}
+                    <option value="{{ paciente.id }}">{{ paciente.nome }}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <p>
+            <label for="psicologo">Psicólogo: </label>
+            <select class="form-control" name="psicologo_id" required>
+                {% for psicologo in psicologos %}
+                    <option value="{{ psicologo.id }}">{{ psicologo.nome }}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <p>
+            <button class="btn-pac-pis" name="btn-pac-pis" type="submit">Agendar</button>
+        </p>
+    </form>
+{% endblock %}

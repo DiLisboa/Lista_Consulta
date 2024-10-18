@@ -1,29 +1,29 @@
 {% extends 'template.html' %}
 {% block content %}
-  <form method="post" action="/cadastra">
+  <form method="post" action="/cadastra" class="form-cadastro">
     <p>
       <label for="nome">Nome: </label>
-      <input class="form-control" type="name" name="nome_pac" required>
+      <input class="form-control" type="name" name="nome" required>
     </p>
     <p>
       <label for="cpf">CPF: </label>
-      <input class="form-control" type="cpf" name="cpf_pac" required>
+      <input class="form-control" type="cpf" name="cpf" required>
     </p>
     <p>
       <label for="numero">Numero de telefone: </label>
-      <input class="form-control" type="number" name="num_pac" required>
+      <input class="form-control" type="number" name="numero" required>
     </p>
     <p>
       <label for="email">Email: </label>
-      <input class="form-control" type="email" name="email_pac" required>
+      <input class="form-control" type="email" name="email" required>
     </p>
     <p>
       <label for="nasc">Data de nascimento: </label>
-      <input class="form-control" type="date" name="nasc_pac" required>
+      <input class="form-control" type="date" name="nasc" required>
     </p>
     <p>
       <label for="sexo">Sexo: </label>
-      <select class="form-control" name="sexo_pac" required>
+      <select class="form-control" name="sexo" required>
         <option value="masculino">Masculino</option>
         <option value="feminino">Feminino</option>
         <option value="nao-binario">Não Binario</option>

@@ -2,14 +2,6 @@
 <html lang="pt-br">
 
 <head>
-
-  <link rel="stylesheet" href="<https://pyscript.net/latest/pyscript.css>" />
-  <script defer src="<https://pyscript.net/latest/pyscript.js>"></script>
-
-  <py-script>print("Hello, Worldssssssssssssssss!")</py-script>
-
-
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../static/styles.css" />
@@ -24,19 +16,34 @@
         <h1>Sistema de lista de paciente</h1>
       </div>
       <div class="btn-grid">
+          <form action="/">
+          <button type="submit">Lista de consultas</button>
+        </form>
         <form action="/cad-pac" >
           <button type="submit">Cadastrar paciente</button>
         </form>
         <form action="/cad-pis" >
           <button type="submit">Cadastrar psicólogo</button>
         </form>
-        <form action="/">
-          <button type="submit">Lista de consultas</button>
+        <form action="/pac-pis">
+          <button type="submit">Agendar Hórarios</button>
         </form>
       </div>
     </div>
 
   </header>
+
+  <div class="notfy">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul id="messages" class="list-unstyled">
+                {% for message in messages %}
+                    <li class="alert alert-success">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+  </div>
 
   <div class="conteudo">
       <h1>{{ titulo }}</h1>
