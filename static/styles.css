@@ -25,6 +25,31 @@ header .header-h1{
   color: white;
 }
 
+header .btn-logout{
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-top: -65px;
+  margin-right: 20px;
+}
+
+header .btn-logout button{
+    font-weight: bold;
+    border: solid 1px transparent;
+    border-radius: 25px;
+    background-color: white;
+    padding: 12px 20px;
+    color: #006b56;
+}
+
+header .btn-logout button:hover {
+  cursor: pointer;
+  background-color: rgb(233, 233, 233);
+  border-radius: solid 2px;
+  border-color: #006b56;
+  transition: 0.5s;
+}
+
 header .btn-grid{
   justify-content: start;
   text-align: center;
@@ -34,6 +59,7 @@ header .btn-grid{
   width: 100%;
   margin-left: 0;
   margin-right: 0;
+  padding-top: 25px;
 }
 
 header .btn-grid button{

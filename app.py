@@ -16,7 +16,14 @@ app.secret_key = 'estacio'
 def lista_pacientes():
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
         return redirect('/login?proxima=lista_pacientes')
-    return render_template('lista_horarios.html', titulo='Lista de pacientes')
+
+    conn = get_db_connection()
+
+    lista_espera = conn.execute(""" SELECT id, horario, data, nome_paciente, nome_psicologo FROM lista_espera """).fetchall()
+
+    conn.close()
+
+    return render_template('lista_horarios.html', lista_espera=lista_espera, titulo="Lista de consultas")
 
 @app.route('/autenticar', methods=['POST'])
 def autenticar():
@@ -41,24 +48,25 @@ def cad_pac():
 
 # Rota para cadastrar paciente (necessário ser POST para enviar dados do formulário)
 @app.route('/cadastra', methods=['POST'])
-def cadastradoPas():
-    nome = request.form.get('nome_pac')
-    cpf = request.form.get('cpf_pac')
-    numero = request.form.get('num_pac')
-    email = request.form.get('email_pac')
-    nascimento = request.form.get('nasc_pac')
-    genero = request.form.get('sexo_pac')
+def cadastradoPac():
+    nome = request.form.get('nome')
+    cpf = request.form.get('cpf')
+    numero = request.form.get('num')
+    email = request.form.get('email')
+    nascimento = request.form.get('nasc')
+    genero = request.form.get('sexo')
+    abordagem = request.form.get('abordagem')
 
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO pacientes (nome, cpf, numero, email, nascimento, genero)
-        VALUES (?, ?, ?, ?, ?, ?)""", (nome, cpf, numero, email, nascimento, genero))
+        INSERT INTO pacientes (nome, cpf, numero, email, nascimento, genero, abordagem)
+        VALUES (?, ?, ?, ?, ?, ?, ?)""", (nome, cpf, numero, email, nascimento, genero, abordagem))
 
     conn.commit()
     conn.close()
 
-    flash('Pasciente cadastrado com sucesso!')
+    flash('Paciente cadastrado com sucesso!')
     return redirect(url_for('lista_pacientes'))
 
 # Rota para cadastrar psicólogo (necessário ser POST)
@@ -71,11 +79,12 @@ def cadastradoPis():
     email = request.form.get('email')
     nasc = request.form.get('nasc')
     sexo = request.form.get('sexo')
+    abordagem = request.form.get('abordagem')
 
     conn = get_db_connection()
     conn.execute("""
-        INSERT INTO psicologos (nome, cpf, crp, numero, email, nasc, sexo)
-        VALUES (?, ?, ?, ?, ?, ?, ?)""", (nome, cpf, crp, numero, email, nasc, sexo))
+        INSERT INTO psicologos (nome, cpf, crp, numero, email, nasc, sexo, abordagem)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", (nome, cpf, crp, numero, email, nasc, sexo, abordagem))
 
     conn.commit()
     conn.close()
@@ -113,16 +122,20 @@ def pac_pis():
     # Buscando psicólogos
     psicologos = conn.execute('SELECT id, nome FROM psicologos').fetchall()
 
+    horarios = [f"{i:02}:00" for i in range(8, 21)]
+
     conn.close()
 
     # Renderizando o template e passando os pacientes e psicólogos
-    return render_template('paciente_psicologo.html', pacientes=pacientes, psicologos=psicologos, titulo="Agendar consulta")
+    return render_template('paciente_psicologo.html', pacientes=pacientes, psicologos=psicologos, horarios=horarios, titulo="Agendar consulta")
 
 
 @app.route('/adicionar-lista-espera', methods=['POST'])
 def adicionar_lista_espera():
     paciente_id = request.form.get('paciente_id')  # agora deve corresponder ao nome do campo
     psicologo_id = request.form.get('psicologo_id')  # agora deve corresponder ao nome do campo
+    data = request.form.get('data')
+    horario = request.form.get('horario')
 
     # Conectando ao banco de dados
     conn = get_db_connection()
@@ -140,11 +153,20 @@ def adicionar_lista_espera():
         flash('Psicólogo não encontrado!')
         return redirect(url_for('pac_pis'))
 
+    horario_ocupado = conn.execute("""
+            SELECT * FROM lista_espera 
+            WHERE psicologo_id = ? AND data = ? AND horario = ?
+        """, (psicologo_id, data, horario)).fetchone()
+
+    if horario_ocupado is not None:
+        flash('Horário já ocupado, selecione um horário vago.')
+        return redirect(url_for('pac_pis'))
+
     # Inserindo os dados na tabela lista_espera
     conn.execute("""
-        INSERT INTO lista_espera (paciente_id, nome_paciente, psicologo_id, nome_psicologo)
-        VALUES (?, ?, ?, ?)
-    """, (paciente_id, paciente['nome'], psicologo_id, psicologo['nome']))
+        INSERT INTO lista_espera (paciente_id, nome_paciente, psicologo_id, nome_psicologo, data, horario)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (paciente_id, paciente['nome'], psicologo_id, psicologo['nome'], data, horario))
 
     conn.commit()
     conn.close()
@@ -152,6 +174,16 @@ def adicionar_lista_espera():
     flash('Paciente e Psicólogo adicionados à lista de espera com sucesso!')
     return redirect(url_for('pac_pis'))
 
+@app.route('/consultas-marcadas')
+def consultas_marcadas():
+
+    conn = get_db_connection()
+
+    lista_espera = conn.execute(""" SELECT id, horario, data, nome_paciente, nome_psicologo FROM lista_espera """).fetchall()
+
+    conn.close()
+
+    return render_template('lista_horarios.html', lista_espera=lista_espera, titulo="Lista de consultas")
 
 app.run(debug=True)
 

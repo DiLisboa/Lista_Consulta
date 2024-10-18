@@ -18,6 +18,18 @@
                 {% endfor %}
             </select>
         </p>
+        <p>
+      <label for="data">Data da consulta: </label>
+      <input class="form-control" type="date" name="data" required>
+        </p>
+        <p>
+      <label for="horario">Horário da consulta: </label>
+      <select class="form-control" name="horario" required>
+            {% for horario in horarios %}
+                <option value="{{ horario }}">{{ horario }}</option>
+            {% endfor %}
+        </select>
+        </p>
 
         <p>
             <button class="btn-pac-pis" name="btn-pac-pis" type="submit">Agendar</button>

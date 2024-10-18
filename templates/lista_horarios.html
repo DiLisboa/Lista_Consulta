@@ -11,12 +11,14 @@
       </tr>
     </thead>
     <tbody>
+    {% for entrada in lista_espera %}
       <tr>
-        <td>12:00</td>
-        <td>15/10/2024</td>
-        <td>teste</td>
-        <td>teste</td>
+        <td>{{ entrada.horario }}</td>
+        <td>{{ entrada.data }}</td>
+        <td>{{ entrada.nome_paciente }}</td>
+        <td>{{ entrada.nome_psicologo }}</td>
       </tr>
+    {% endfor %}
     </tbody>
   </table>
 {% endblock %}
