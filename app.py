@@ -2,7 +2,6 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 
-
 def get_db_connection():
     conn = sqlite3.connect('bancopsi.db')
     conn.row_factory = sqlite3.Row
@@ -12,6 +11,8 @@ def get_db_connection():
 app = Flask(__name__)
 app.secret_key = 'estacio'
 
+
+#tela principal
 @app.route('/')
 def lista_pacientes():
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
@@ -19,12 +20,13 @@ def lista_pacientes():
 
     conn = get_db_connection()
 
-    lista_espera = conn.execute(""" SELECT id, horario, data, nome_paciente, nome_psicologo FROM lista_espera """).fetchall()
+    lista_espera = conn.execute(""" SELECT id, horario, data, nome_paciente, nome_psicologo FROM lista_espera ORDER BY data, horario""").fetchall()
 
     conn.close()
 
     return render_template('lista_horarios.html', lista_espera=lista_espera, titulo="Lista de consultas")
 
+#autenticação do admin
 @app.route('/autenticar', methods=['POST'])
 def autenticar():
     usuario = request.form.get('usuario')
@@ -46,7 +48,7 @@ def cad_pac():
     return render_template('cadastro_paciente.html', titulo='Cadastro do paciente')
 
 
-# Rota para cadastrar paciente (necessário ser POST para enviar dados do formulário)
+#cadastro do paciente
 @app.route('/cadastra', methods=['POST'])
 def cadastradoPac():
     nome = request.form.get('nome')
@@ -69,7 +71,7 @@ def cadastradoPac():
     flash('Paciente cadastrado com sucesso!')
     return redirect(url_for('lista_pacientes'))
 
-# Rota para cadastrar psicólogo (necessário ser POST)
+# cadastro do psicólogo
 @app.route('/cadastrado', methods=['POST'])
 def cadastradoPis():
     nome = request.form.get('nome')
@@ -111,46 +113,59 @@ def logout():
     flash('Logout realizado com sucesso')
     return redirect(url_for('lista_pacientes'))
 
-@app.route('/pac-pis')
+#agendamento de consultas
+@app.route('/pac-pis', methods=['GET', 'POST'])
 def pac_pis():
-    # Conectando ao banco de dados
     conn = get_db_connection()
 
-    # Buscando pacientes
-    pacientes = conn.execute('SELECT id, nome FROM pacientes').fetchall()
+    if request.method == 'POST':
+        paciente_id = request.form.get('paciente_id')
 
-    # Buscando psicólogos
-    psicologos = conn.execute('SELECT id, nome FROM psicologos').fetchall()
+        if paciente_id:
+            paciente_selecionado = conn.execute('SELECT id, nome, abordagem FROM pacientes WHERE id = ?',
+                                                (paciente_id,)).fetchone()
 
+            if paciente_selecionado:
+                psicologos = conn.execute('SELECT id, nome FROM psicologos WHERE abordagem = ?',
+                                          (paciente_selecionado['abordagem'],)).fetchall()
+            else:
+                psicologos = []
+        else:
+            paciente_selecionado = None
+            psicologos = []
+    else:
+        paciente_selecionado = None
+        psicologos = []
+
+    pacientes = conn.execute('SELECT id, nome, abordagem FROM pacientes').fetchall()
     horarios = [f"{i:02}:00" for i in range(8, 21)]
 
     conn.close()
 
-    # Renderizando o template e passando os pacientes e psicólogos
-    return render_template('paciente_psicologo.html', pacientes=pacientes, psicologos=psicologos, horarios=horarios, titulo="Agendar consulta")
+    return render_template(
+        'paciente_psicologo.html',
+        pacientes=pacientes,
+        psicologos=psicologos,
+        horarios=horarios,
+        paciente_selecionado=paciente_selecionado,
+        titulo="Agendar consulta"
+    )
 
-
-@app.route('/adicionar-lista-espera', methods=['POST'])
+#adiciona a consulta na lista
+@app.route('/adicionar-lista_espera', methods=['POST'])
 def adicionar_lista_espera():
-    paciente_id = request.form.get('paciente_id')  # agora deve corresponder ao nome do campo
-    psicologo_id = request.form.get('psicologo_id')  # agora deve corresponder ao nome do campo
+    paciente_id = request.form.get('paciente_id')
+    psicologo_id = request.form.get('psicologo_id')
     data = request.form.get('data')
     horario = request.form.get('horario')
 
-    # Conectando ao banco de dados
     conn = get_db_connection()
 
-    # Buscando o nome do paciente e psicólogo com base nos IDs selecionados
-    paciente = conn.execute('SELECT nome FROM pacientes WHERE id = ?', (paciente_id,)).fetchone()
-    psicologo = conn.execute('SELECT nome FROM psicologos WHERE id = ?', (psicologo_id,)).fetchone()
+    paciente = conn.execute('SELECT nome, abordagem FROM pacientes WHERE id = ?', (paciente_id,)).fetchone()
+    psicologo = conn.execute('SELECT nome, abordagem FROM psicologos WHERE id = ?', (psicologo_id,)).fetchone()
 
-    # Verifique se ambos os registros foram encontrados
-    if paciente is None:
-        flash('Paciente não encontrado!')
-        return redirect(url_for('pac_pis'))
-
-    if psicologo is None:
-        flash('Psicólogo não encontrado!')
+    if paciente['abordagem'] != psicologo['abordagem']:
+        flash('Paciente e Psicólogo devem ter a mesma abordagem para agendar uma consulta!')
         return redirect(url_for('pac_pis'))
 
     horario_ocupado = conn.execute("""
@@ -162,7 +177,6 @@ def adicionar_lista_espera():
         flash('Horário já ocupado, selecione um horário vago.')
         return redirect(url_for('pac_pis'))
 
-    # Inserindo os dados na tabela lista_espera
     conn.execute("""
         INSERT INTO lista_espera (paciente_id, nome_paciente, psicologo_id, nome_psicologo, data, horario)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -171,19 +185,9 @@ def adicionar_lista_espera():
     conn.commit()
     conn.close()
 
-    flash('Paciente e Psicólogo adicionados à lista de espera com sucesso!')
+    flash('Consulta agendada com sucesso!')
     return redirect(url_for('pac_pis'))
 
-@app.route('/consultas-marcadas')
-def consultas_marcadas():
-
-    conn = get_db_connection()
-
-    lista_espera = conn.execute(""" SELECT id, horario, data, nome_paciente, nome_psicologo FROM lista_espera """).fetchall()
-
-    conn.close()
-
-    return render_template('lista_horarios.html', lista_espera=lista_espera, titulo="Lista de consultas")
 
 app.run(debug=True)
 

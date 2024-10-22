@@ -1,38 +1,54 @@
 {% extends 'template.html' %}
 {% block content %}
-    <form method="post" action="/adicionar-lista-espera" class="form-cadastro">
+
+    <!-- Formulário com dois actions diferentes -->
+    <form method="post" action="{{ url_for('pac_pis') }}" id="pacienteForm" class="form-cadastro">
+        <!-- Seleção do paciente -->
         <p>
             <label for="paciente">Paciente: </label>
-            <select class="form-control" name="paciente_id" required>
+            <select class="form-control" name="paciente_id" required onchange="document.getElementById('pacienteForm').action='{{ url_for('pac_pis') }}'; this.form.submit();">
+                <option value="">Selecione um paciente</option>
                 {% for paciente in pacientes %}
-                    <option value="{{ paciente.id }}">{{ paciente.nome }}</option>
+                    <option value="{{ paciente.id }}" {% if paciente_selecionado and paciente_selecionado.id == paciente.id %}selected{% endif %}>
+                        {{ paciente.nome }}
+                    </option>
                 {% endfor %}
             </select>
         </p>
 
+        <!-- Seleção do psicólogo filtrado pela abordagem -->
         <p>
             <label for="psicologo">Psicólogo: </label>
             <select class="form-control" name="psicologo_id" required>
-                {% for psicologo in psicologos %}
-                    <option value="{{ psicologo.id }}">{{ psicologo.nome }}</option>
+                <option value="">Selecione um psicólogo</option>
+                {% if psicologos %}
+                    {% for psicologo in psicologos %}
+                        <option value="{{ psicologo.id }}">{{ psicologo.nome }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </p>
+
+        <!-- Data da consulta -->
+        <p>
+            <label for="data">Data da consulta: </label>
+            <input class="form-control" type="date" name="data" required>
+        </p>
+
+        <!-- Horário da consulta -->
+        <p>
+            <label for="horario">Horário da consulta: </label>
+            <select class="form-control" name="horario" required>
+                {% for horario in horarios %}
+                    <option value="{{ horario }}">{{ horario }}</option>
                 {% endfor %}
             </select>
         </p>
-        <p>
-      <label for="data">Data da consulta: </label>
-      <input class="form-control" type="date" name="data" required>
-        </p>
-        <p>
-      <label for="horario">Horário da consulta: </label>
-      <select class="form-control" name="horario" required>
-            {% for horario in horarios %}
-                <option value="{{ horario }}">{{ horario }}</option>
-            {% endfor %}
-        </select>
-        </p>
 
+        <!-- Botão para agendar a consulta -->
         <p>
-            <button class="btn-pac-pis" name="btn-pac-pis" type="submit">Agendar</button>
+            <button class="btn-pac-pis" name="btn-pac-pis" type="submit" onclick="document.getElementById('pacienteForm').action='{{ url_for('adicionar_lista_espera') }}';">Agendar</button>
         </p>
     </form>
+
 {% endblock %}
